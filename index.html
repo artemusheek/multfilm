@@ -20,9 +20,39 @@
     </style>
 </head>
 <body>
-    <video autoplay muted loop controls>
+    <video id="myVideo" autoplay muted loop>
         <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-        Your browser does not support the video tag.
     </video>
+
+    <script>
+        window.addEventListener('load', function() {
+            const video = document.getElementById('myVideo');
+            video.volume = 1.0;
+            
+            // Ждем когда видео начнет воспроизводиться и включаем звук
+            video.addEventListener('play', function() {
+                setTimeout(() => {
+                    video.muted = false;
+                }, 1000);
+            });
+
+            // Автоматическое воспроизведение с muted, затем включение звука
+            video.play().then(() => {
+                setTimeout(() => {
+                    video.muted = false;
+                }, 1000);
+            }).catch(error => {
+                // Если автоматическое воспроизведение не сработало
+                document.body.style.cursor = 'pointer';
+                document.body.onclick = function() {
+                    video.play().then(() => {
+                        setTimeout(() => {
+                            video.muted = false;
+                        }, 1000);
+                    });
+                };
+            });
+        });
+    </script>
 </body>
 </html>
