@@ -7,52 +7,51 @@
             margin: 0;
             padding: 0;
             background: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
         video {
             width: 100%;
-            height: 100%;
+            height: 100vh;
             object-fit: cover;
         }
     </style>
 </head>
 <body>
-    <video id="myVideo" autoplay muted loop>
+    <video id="myVideo" controls playsinline>
         <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
     </video>
 
     <script>
-        window.addEventListener('load', function() {
-            const video = document.getElementById('myVideo');
-            video.volume = 1.0;
-            
-            // Ждем когда видео начнет воспроизводиться и включаем звук
-            video.addEventListener('play', function() {
-                setTimeout(() => {
-                    video.muted = false;
-                }, 1000);
-            });
+        const video = document.getElementById('myVideo');
+        video.volume = 1.0;
 
-            // Автоматическое воспроизведение с muted, затем включение звука
-            video.play().then(() => {
-                setTimeout(() => {
-                    video.muted = false;
-                }, 1000);
-            }).catch(error => {
-                // Если автоматическое воспроизведение не сработало
-                document.body.style.cursor = 'pointer';
-                document.body.onclick = function() {
-                    video.play().then(() => {
-                        setTimeout(() => {
-                            video.muted = false;
-                        }, 1000);
-                    });
+        // Пытаемся воспроизвести со звуком
+        const promise = video.play();
+        
+        if (promise !== undefined) {
+            promise.catch(error => {
+                // Если автовоспроизведение заблокировано, показываем кнопку
+                const button = document.createElement('button');
+                button.textContent = 'включить мультик(нажмите F11 для комфорта);
+                button.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 24px;
+                    padding: 20px 40px;
+                    background: red;
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                    z-index: 1000;
+                `;
+                button.onclick = () => {
+                    video.play();
+                    button.remove();
                 };
+                document.body.appendChild(button);
             });
-        });
+        }
     </script>
 </body>
 </html>
